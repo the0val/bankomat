@@ -82,6 +82,9 @@ func main() {
 	}
 }
 
+// login checks the given credentials agains UserList and returns
+// true and the User object if it finds a match.
+// Otherwis false and an empty User{}
 func (list UserList) login(username, password string) (found bool, user User) {
 	for _, v := range list {
 		if (matchIgnoreCase(username, v.name)) && (password == v.password) {
@@ -97,26 +100,32 @@ func (list UserList) login(username, password string) (found bool, user User) {
 	return true, user
 }
 
-func askCredentials() (string, string) {
+// askCredentials asks the user for a username and password.
+// The password field is now echoed when entered.
+func askCredentials() (username string, password string) {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Name: ")
-	username, _ := reader.ReadString('\n')
+	username, _ = reader.ReadString('\n')
 	username = strings.Trim(username, " \n")
 
 	fmt.Print("Password: ")
-	password, err := terminal.ReadPassword(int(syscall.Stdin))
+	pwbytes, err := terminal.ReadPassword(int(syscall.Stdin))
 	fmt.Println("") // Move down one line
 	if err != nil {
 		panic(err)
 	}
-	return username, strings.Trim(string(password), " ")
+	return username, strings.Trim(string(pwbytes), " ")
 }
 
+// matchIgnoreCase returns if the two strings are equal,
+// ignoring upper or lower case.
 func matchIgnoreCase(a, b string) bool {
 	return strings.ToLower(a) == strings.ToLower(b)
 }
 
+// userChoice takes userinput that must match one of the given
+// options and returns first valid input.
 func userChoice(options []string) string {
 	lookup := make(map[string]bool)
 	for _, v := range options {
@@ -135,6 +144,7 @@ func userChoice(options []string) string {
 	}
 }
 
+// deposit takes user input to deposit money
 func deposit(user *User) {
 	fmt.Print("What amount would you like to deposit? ")
 	reader := bufio.NewReader(os.Stdin)
@@ -151,6 +161,7 @@ func deposit(user *User) {
 	}
 }
 
+// withdraw takes user input to withdraw money
 func withdraw(user *User) {
 	fmt.Print("What amount would you like to withdraw? ")
 	reader := bufio.NewReader(os.Stdin)
