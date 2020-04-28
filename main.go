@@ -53,7 +53,7 @@ type UserList []User
 
 func main() {
 	customers := UserList{
-		{"Rick Mann", "Password1", 30100.50},
+		{"Rick Mann", "Password1", 301000.50},
 		{"Peter Pan", "neverland", 2750.00},
 	}
 
@@ -77,7 +77,7 @@ func main() {
 		case "3":
 			withdraw(&user)
 		case "exit":
-			break
+			return
 		}
 	}
 }
@@ -107,7 +107,7 @@ func askCredentials() (username string, password string) {
 
 	fmt.Print("Name: ")
 	username, _ = reader.ReadString('\n')
-	username = strings.Trim(username, " \n")
+	username = strings.Trim(username, " \n\r")
 
 	fmt.Print("Password: ")
 	pwbytes, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -115,7 +115,7 @@ func askCredentials() (username string, password string) {
 	if err != nil {
 		panic(err)
 	}
-	return username, strings.Trim(string(pwbytes), " ")
+	return username, strings.Trim(string(pwbytes), " \r")
 }
 
 // matchIgnoreCase returns if the two strings are equal,
@@ -136,7 +136,7 @@ func userChoice(options []string) string {
 		fmt.Print("> ")
 		s, _ := reader.ReadString('\n')
 		// Trim trailing whitespace
-		s = strings.Trim(s, "\n ")
+		s = strings.Trim(s, "\n\r ")
 		if lookup[strings.ToLower(s)] {
 			return s
 		}
@@ -150,7 +150,7 @@ func deposit(user *User) {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		s, _ := reader.ReadString('\n')
-		s = strings.Trim(s, " \n")
+		s = strings.Trim(s, " \n\r")
 		n, err := strconv.ParseFloat(s, 64)
 		if err == nil {
 			user.Deposit(n)
