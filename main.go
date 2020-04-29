@@ -62,8 +62,9 @@ func main() {
 		fmt.Println("Fel användarnamn eller lösenord.")
 		return
 	}
+	fmt.Printf("Hello, %v!\n", user.name)
 	for {
-		fmt.Printf("Hello, %v!\nWhat would you like to do?\n", user.name)
+		fmt.Println("What would you like to do?")
 		fmt.Println("1. Check balance")
 		fmt.Println("2. Deposit money")
 		fmt.Println("3. Withdraw money")
@@ -73,9 +74,23 @@ func main() {
 		case "1":
 			fmt.Println(user.SPrintBalance())
 		case "2":
-			deposit(&user)
+			fmt.Println("How much would you like to deposit?")
+			n := askForNumber()
+			err := user.Deposit(n)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println("New balance ", user.SPrintBalance())
+			}
 		case "3":
-			withdraw(&user)
+			fmt.Println("How much would you like to withdraw?")
+			n := askForNumber()
+			err := user.Withdraw(n)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println("New balance ", user.SPrintBalance())
+			}
 		case "exit":
 			return
 		}
@@ -144,34 +159,20 @@ func userChoice(options []string) string {
 	}
 }
 
-// deposit takes user input to deposit money
-func deposit(user *User) {
-	fmt.Print("What amount would you like to deposit? ")
+// askForNumber takes user input and converts it to float64.
+// If the user types an invalid numer they get to try again
+// until they enter a valid number or exit.
+// If user types exit, returns 0
+func askForNumber() float64 {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		s, _ := reader.ReadString('\n')
 		s = strings.Trim(s, " \n\r")
 		n, err := strconv.ParseFloat(s, 64)
 		if err == nil {
-			user.Deposit(n)
-			fmt.Printf("New balance: %v\n", user.SPrintBalance())
-			return
-		}
-		fmt.Print("Not a valid number. Try again: ")
-	}
-}
-
-// withdraw takes user input to withdraw money
-func withdraw(user *User) {
-	fmt.Print("What amount would you like to withdraw? ")
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		s, _ := reader.ReadString('\n')
-		n, err := strconv.ParseFloat(s, 64)
-		if err == nil {
-			user.Withdraw(n)
-			fmt.Printf("New balance: %v\n", user.SPrintBalance())
-			return
+			return n
+		} else if s == "exit" {
+			return 0
 		}
 		fmt.Print("Not a valid number. Try again: ")
 	}
